@@ -1,0 +1,22 @@
+extends layout 
+
+block content 
+    h1 New character 
+    a(href='/list') Back
+    form(method='post', action='/process')
+        label(for='id') ID: 
+        input(type='number', name='id', required=true)
+        br
+        label(for='name') Name: 
+        input(type='text', name='name', required=true)
+        br
+        label(for='job') Job: 
+        input(type='text', name='job', required=true)
+        br
+        label(for='weapon') Weapon: 
+        input(type='text', name='weapon', required=true)
+        br
+        label(for='level') Level: 
+        input(type='number', name='level', required=true)
+        br
+        button(type='submit') Save
