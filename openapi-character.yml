@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: Characters API
+  description: API REST para gestión de personajes del juego
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Servidor local
+
+paths:
+  /characters:
+    get:
+      summary: Obtener todos los personajes
+      operationId: getCharacters
+      responses:
+        '200':
+          description: Lista de personajes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Character'
+
+    post:
+      summary: Crear un nuevo personaje
+      operationId: createCharacter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharacterInput'
+      responses:
+        '201':
+          description: Personaje creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '400':
+          description: Datos inválidos o personaje con ese nombre ya existente
+
+  /characters/{id}:
+    get:
+      summary: Obtener un personaje por ID
+      operationId: getCharacterById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del personaje (MongoDB ObjectId)
+      responses:
+        '200':
+          description: Personaje encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Personaje no encontrado
+
+    put:
+      summary: Actualizar un personaje por ID
+      operationId: updateCharacter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del personaje (MongoDB ObjectId)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharacterInput'
+      responses:
+        '204':
+          description: Personaje actualizado correctamente
+        '400':
+          description: Datos inválidos o nombre ya en uso por otro personaje
+        '404':
+          description: Personaje no encontrado
+
+    delete:
+      summary: Eliminar un personaje por ID
+      operationId: deleteCharacter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del personaje (MongoDB ObjectId)
+      responses:
+        '204':
+          description: Personaje eliminado correctamente
+        '404':
+          description: Personaje no encontrado
+
+components:
+  schemas:
+    Character:
+      type: object
+      required:
+        - name
+        - weapon
+        - job
+        - level
+      properties:
+        _id:
+          type: string
+          description: ID generado por MongoDB
+          example: 6630a1f2e4b0c123456789ab
+        name:
+          type: string
+          minLength: 2
+          maxLength: 20
+          example: Cloud
+        weapon:
+          type: string
+          example: Buster Sword
+        job:
+          type: string
+          enum:
+            - Fighter
+            - Mage
+            - Healer
+            - Monk
+          example: Fighter
+        level:
+          type: integer
+          minimum: 1
+          maximum: 99
+          example: 10
+        __v:
+          type: integer
+          description: Versión del documento (Mongoose)
+
+    CharacterInput:
+      type: object
+      required:
+        - name
+        - weapon
+        - job
+        - level
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 20
+          example: Cloud
+        weapon:
+          type: string
+          example: Buster Sword
+        job:
+          type: string
+          enum:
+            - Fighter
+            - Mage
+            - Healer
+            - Monk
+          example: Fighter
+        level:
+          type: integer
+          minimum: 1
+          maximum: 99
+          example: 10

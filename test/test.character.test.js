@@ -1,70 +1,79 @@
 const mongoose = require('mongoose');
+const { expect } = require('chai');
 const Character = require('../models/Character');
 const { connectDB } = require('../db');
 
-beforeAll(async () => {
+before(async () => {
     await connectDB();
     await Character.deleteMany({});
 });
 
-afterAll(async () => {
+after(async () => {
     await mongoose.connection.close();
 });
 
 describe('Character model', () => {
-    test('crea un character válido', async () => {
+    it('crea un character válido', async () => {
         const c = await Character.create({
             name: 'Cloud',
             job: 'Fighter',
             weapon: 'Buster Sword',
             level: 10
         });
-        expect(c._id).toBeDefined();
-        expect(c.name).toBe('Cloud');
+        expect(c._id).to.exist;
+        expect(c.name).to.equal('Cloud');
     });
 
-    test('falla si falta name', async () => {
-        await expect(
-            Character.create({
+    it('falla si falta name', async () => {
+        try {
+            await Character.create({
                 job: 'Mage',
                 weapon: 'Staff',
                 level: 3
-            })
-        ).rejects.toThrow(mongoose.Error.ValidationError);
+            });
+            expect.fail('Debería haber lanzado ValidationError');
+        } catch (err) {
+            expect(err).to.be.instanceOf(mongoose.Error.ValidationError);
+        }
     });
 
-    test('falla si job no está en el enum', async () => {
-        await expect(
-            Character.create({
+    it('falla si job no está en el enum', async () => {
+        try {
+            await Character.create({
                 name: 'BadJob',
                 job: 'Soldier',
                 weapon: 'Sword',
                 level: 5
-            })
-        ).rejects.toThrow(mongoose.Error.ValidationError);
+            });
+            expect.fail('Debería haber lanzado ValidationError');
+        } catch (err) {
+            expect(err).to.be.instanceOf(mongoose.Error.ValidationError);
+        }
     });
 
-    test('falla si level es menor que 1', async () => {
-        await expect(
-            Character.create({
+    it('falla si level es menor que 1', async () => {
+        try {
+            await Character.create({
                 name: 'LowLevel',
                 job: 'Monk',
                 weapon: 'Stick',
                 level: 0
-            })
-        ).rejects.toThrow(mongoose.Error.ValidationError);
+            });
+            expect.fail('Debería haber lanzado ValidationError');
+        } catch (err) {
+            expect(err).to.be.instanceOf(mongoose.Error.ValidationError);
+        }
     });
 
-    test('actualiza un character con datos válidos', async () => {
+    it('actualiza un character con datos válidos', async () => {
         const c = await Character.create({
             name: 'Barret',
             job: 'Healer',
             weapon: 'Gun-Arm',
             level: 7
         });
-
         c.level = 9;
         const updated = await c.save();
-        expect(updated.level).toBe(9);
+        expect(updated.level).to.equal(9);
     });
 });
