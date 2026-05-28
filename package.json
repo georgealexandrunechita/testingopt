@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive test/ --timeout 10000"
+    "start": "node index.js",
+    "test": "mocha --recursive test/ --timeout 10000",
+    "test:coverage": "nyc --reporter=text --reporter=lcov mocha --recursive test/ --timeout 10000"
   },
   "author": "",
   "license": "ISC",
@@ -15,11 +17,24 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
     "mongoose": "^9.1.5",
+    "morgan": "^1.10.0",
     "pug": "^3.0.3"
   },
   "devDependencies": {
     "chai": "^6.2.2",
     "jest": "^29.7.0",
-    "mocha": "^11.7.5"
+    "mocha": "^11.7.5",
+    "nyc": "^17.1.0"
+  },
+  "nyc": {
+    "include": [
+      "routes/**/*.js",
+      "models/**/*.js",
+      "middleware/**/*.js",
+      "db.js"
+    ],
+    "exclude": [
+      "test/**"
+    ]
   }
 }
